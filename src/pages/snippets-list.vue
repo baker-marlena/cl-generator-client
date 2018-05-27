@@ -32,7 +32,7 @@ export default {
   methods: {
     getSnippets() {
       this.$auth.getAccessToken().then(token => {
-        fetch('http://localhost:3000/list/snippet', {
+        fetch('http://localhost:3000/list', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`
@@ -40,21 +40,10 @@ export default {
         })
           .then(res => res.json())
           .then(res => {
-            console.log(res);
-            let tagList = []
-            res.data.forEach(entry => {
-              entry.tags.tags.forEach(tag => {
-                if(!tagList.find(el => {
-                  return el === tag
-                })){
-                  tagList.push(tag)
-                }
-              })
-            })
-            this.options = tagList
-            this.snippets = res.data.map(entry => {
+            this.options = res.data.tags
+            this.snippets = res.data.list.map(entry => {
               return {
-                topics: entry.tags.tags,
+                topics: entry.tags,
                 text: entry.text
               }
             })
