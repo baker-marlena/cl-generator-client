@@ -31,12 +31,35 @@ export default {
   },
   methods: {
     getSnippets() {
-      fetch('../static/parts.json')
-        .then(res => res.json())
-        .then(res => {
-          this.options = res.topics
-          this.snippets = res.snippets
+      this.$auth.getAccessToken().then(token => {
+        fetch('http://localhost:3000/list/snippet', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         })
+          .then(res => res.json())
+          .then(res => {
+            console.log(res);
+            let tagList = []
+            res.data.forEach(entry => {
+              entry.tags.tags.forEach(tag => {
+                if(!tagList.find(el => {
+                  return el === tag
+                })){
+                  tagList.push(tag)
+                }
+              })
+            })
+            this.options = tagList
+            this.snippets = res.data.map(entry => {
+              return {
+                topics: entry.tags.tags,
+                text: entry.text
+              }
+            })
+          })
+      })
     },
     deleteSnippet() {
       console.log('Delete');
