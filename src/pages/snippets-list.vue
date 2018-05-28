@@ -6,7 +6,7 @@
     <ul>
       <li v-for="(snippet, index) in displaySnippets" :key="snippet.text" :class="{highlighted: index %2 == 0}">
         <p><span v-for="(tag, index) in snippet.topics" :key="tag" class="tag" :class="{pipe: index != 0}">{{tag}}</span></p>
-        <p @click="deleteSnippet()">
+        <p @click="deleteSnippet(snippet.id)">
           <i class="far fa-times-hexagon delete-button"></i>
         </p>
         <p>
@@ -32,7 +32,7 @@ export default {
   methods: {
     getSnippets() {
       this.$auth.getAccessToken().then(token => {
-        fetch('http://localhost:3000/list', {
+        fetch('http://localhost:3000/items/list', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`
@@ -44,14 +44,25 @@ export default {
             this.snippets = res.data.list.map(entry => {
               return {
                 topics: entry.tags,
-                text: entry.text
+                text: entry.text,
+                id: entry.id
               }
             })
           })
       })
     },
-    deleteSnippet() {
-      console.log('Delete');
+    deleteSnippet(id) {
+      this.$auth.getAccessToken().then(token => {
+        fetch(`http://localhost:3000/items/delete/${id}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        .then(res => {
+          this.getSnippets();
+        })
+      })
     }
   },
   computed: {

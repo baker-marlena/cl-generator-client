@@ -45,13 +45,21 @@ export default {
     sendItem() {
       console.log(this.item);
       this.$auth.getAccessToken().then(token => {
-        fetch('http://localhost:3000/add', {
+        fetch('http://localhost:3000/items/add', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify(this.item)
+        })
+        .then(res => {
+          this.item = {
+            type: '',
+            text: '',
+            tags: []
+          }
+          this.currentTag = ''
         })
       })
     }
