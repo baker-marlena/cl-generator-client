@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Auth from '@okta/okta-vue'
 import login from '@/pages/login'
 import snippets from '@/pages/snippets-list'
+import add from '@/pages/add-snippet'
 
 Vue.use(VueRouter)
 Vue.use(Auth, {
@@ -28,6 +29,11 @@ export default new VueRouter({
         path: '/list',
         name: 'snippets-list',
         component: snippets
+      },
+      {
+        path: '/add',
+        name: 'add-snippet',
+        component: add
       }
     ]
 })
