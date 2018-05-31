@@ -1,21 +1,21 @@
 <template lang="html">
   <li>
     <div v-if="!editMode" class="grid-div">
-      <p class="full-width"><span v-for="(tag, index) in item.topics" :key="tag" class="tag" :class="{pipe: index != 0}">{{tag}}</span></p>
+      <p class="full-width"><span v-for="(tag, index) in item.tags" :key="tag" class="tag" :class="{pipe: index != 0}">{{tag}}</span></p>
       <p>
         <span @click="editMode = !editMode"><i class="far fa-pen-square edit-button"></i></span>
       </p>
       <p class="full-width">
         {{item.text}}
       </p>
-      <p @click="deleteSnippet(item.id)">
+      <p @click="deleteSnippet(itemData.id)">
         <i class="far fa-times-hexagon delete-button"></i>
       </p>
     </div>
     <div v-if="editMode">
-      <form class="grid-div" @submit.prevent="updateItem">
+      <form class="grid-div" @submit.prevent="updateSnippet(itemData.id)">
         <ul class="tag-list">
-          <li v-for="(tag, index) in item.topics" :key="tag" class="tag-item">{{tag}} <span @click="removeTag(index)"><i class="fas fa-times fa-sm"></i></span></li>
+          <li v-for="(tag, index) in item.tags" :key="tag" class="tag-item">{{tag}} <span @click="removeTag(index)"><i class="fas fa-times fa-sm"></i></span></li>
         </ul>
         <p class="close-button" @click="editMode = !editMode">
           <i class="far fa-times"></i>
@@ -42,8 +42,28 @@ export default {
     return {
       editMode: false,
       currentTag: '',
-      item: this.itemData
+      item: {
+        text: '',
+        type: '',
+        tags: []
+      }
     }
+  },
+  created() {
+    this.$auth.getAccessToken().then(token => {
+      fetch(`http://localhost:3000/items/${this.itemData.id}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(res => {
+        this.item.tags = res.data.tags.map(tag => tag.text)
+        this.item.text = res.data.text
+        this.item.type = res.data.type
+      })
+    })
   },
   methods: {
     deleteSnippet(id) {
@@ -59,14 +79,28 @@ export default {
         })
       })
     },
+    updateSnippet(id) {
+      console.log(id, this.item);
+      let body = this.item
+      this.$auth.getAccessToken().then(token => {
+        fetch(`http://localhost:3000/items/${id}`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        })
+      })
+    },
     addTag(tag) {
-      if(!this.item.topics.find(el => {
+      if(!this.item.tags.find(el => {
         return el.toLowerCase() === tag.toLowerCase()
       }))
-      this.item.topics.push(tag.toLowerCase())
+      this.item.tags.push(tag.toLowerCase())
     },
     removeTag(index) {
-      this.item.topics.splice(index, 1)
+      this.item.tags.splice(index, 1)
     },
     updateItem(){
       console.log(this.item);
@@ -172,13 +206,13 @@ select {
   font-size: 1rem;
   background-color: #1AADB5;
   color: white;
-  }
-  .submit-input:hover {
-    background-color: white;
-    border: 2px solid #1AADB5;
-    color: #1AADB5;
-  }
-  textarea {
-    border: 1px solid #7A21A8 !important;
-  }
+}
+.submit-input:hover {
+  background-color: white;
+  border: 2px solid #1AADB5;
+  color: #1AADB5;
+}
+textarea {
+  border: 1px solid #7A21A8 !important;
+}
 </style>

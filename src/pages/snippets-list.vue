@@ -78,6 +78,7 @@ export default {
    background-color: #BF1C83;
    color: white;
    font-size: 1.1rem;
+   margin: 0;
  }
  ul {
    list-style: none;

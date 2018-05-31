@@ -1,19 +1,22 @@
 <template lang="html">
   <form @submit.prevent="sendItem">
-    <h3>Add an Item</h3>
-    <select v-model="item.type">
-      <option disabled hidden class="select-placeholder">Type</option>
+    <h3 class="full-width">Add an Item</h3>
+    <select v-model="item.type" class="full-width">
+      <option disabled hidden>Type</option>
       <option>Snippet</option>
       <option>Story</option>
       <option>Answer</option>
     </select>
+    <p class="error-text full-width">{{typeErrorMessage}}</p>
     <textarea rows="12" class="text-input" v-model="item.text" placeholder="Item Text"/>
+    <p class="error-text full-width">{{textErrorMessage}}</p>
     <input type='text' class="text-input tag-input" v-model="currentTag" placeholder="Tag" />
     <button @click.prevent="addTag(currentTag)">Add Tag</button>
+    <p class="error-text full-width">{{tagsErrorMessage}}</p>
     <ul class="tag-list">
       <li v-for="(tag, index) in item.tags" :key="tag">{{tag}} <span @click="removeTag(index)"><i class="fas fa-times fa-sm"></i></span></li>
     </ul>
-    <input class="submit-input" type="submit" value="Add Item" />
+    <input class="submit-input full-width" type="submit" value="Add Item" />
   </form>
 </template>
 
@@ -28,6 +31,9 @@ export default {
   },
   data() {
     return {
+      typeErrorMessage: '',
+      textErrorMessage: '',
+      tagsErrorMessage: '',
       currentTag: '',
       item: {
         type: 'Type',
@@ -47,25 +53,53 @@ export default {
       this.item.tags.splice(index, 1)
     },
     sendItem() {
-      console.log(this.item);
-      this.$auth.getAccessToken().then(token => {
-        fetch('http://localhost:3000/items/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(this.item)
+      if(this.verifyForm()){
+        this.$auth.getAccessToken().then(token => {
+          fetch('http://localhost:3000/items/add', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(this.item)
+          })
+          .then(res => {
+            this.item = {
+              type: '',
+              text: '',
+              tags: []
+            }
+            this.currentTag = ''
+          })
         })
-        .then(res => {
-          this.item = {
-            type: '',
-            text: '',
-            tags: []
-          }
-          this.currentTag = ''
-        })
-      })
+      }
+    },
+    verifyForm () {
+      let type = this.verifyType()
+      let text = this.verifyText()
+      let tags = this.verifyTags()
+      return type && text && tags
+    },
+    verifyType() {
+      if (this.item.type === 'Type') {
+        this.typeErrorMessage = 'Please select a type.'
+      } else {
+        return true
+      }
+    },
+    verifyText() {
+      if (this.item.text === '') {
+        this.textErrorMessage = 'Please enter some text.'
+      } else {
+        return true
+      }
+    },
+    verifyTags() {
+      if (this.item.tags.length === 0) {
+        this.tagsErrorMessage = 'Please add at least one tag.'
+      } else {
+        return true
+      }
     }
   }
 }
@@ -75,12 +109,8 @@ export default {
   form {
     display: grid;
     grid-template-columns: 80% 20%;
-    width: 30%;
+    width: 50%;
     margin: 0 auto;
-  }
-  label {
-    margin: 10px 0 10px 0;
-    grid-column: 1/3;
   }
   textarea:focus, input:focus select:focus{
     outline: none;
@@ -88,7 +118,6 @@ export default {
   select {
     font-size: 1.1rem;
     align-self: center;
-    grid-column: 1/3;
     background: transparent;
     border-top: transparent !important;
     border-left: transparent !important;
@@ -143,7 +172,6 @@ export default {
 
   }
   .submit-input {
-    grid-column: 1/3;
     padding: 5px 0 5px 0;
     font-size: 1rem;
     background-color: #1AADB5;
@@ -153,5 +181,11 @@ export default {
     background-color: white;
     border: 2px solid #1AADB5;
     color: #1AADB5;
+  }
+  .error-text {
+    color: #E8220A;
+  }
+  .full-width {
+    grid-column: 1/3;
   }
 </style>
