@@ -1,16 +1,14 @@
 <template lang="html">
   <form @submit.prevent="sendItem">
     <h3>Add an Item</h3>
-    <label>Type</label>
     <select v-model="item.type">
+      <option disabled hidden class="select-placeholder">Type</option>
       <option>Snippet</option>
       <option>Story</option>
       <option>Answer</option>
     </select>
-    <label>Text</label>
-    <input type='text' contenteditable class="text-input" v-model="item.text"></input>
-    <label>Tags</label>
-    <input type='text' class="text-input tag-input" v-model="currentTag"></input>
+    <textarea rows="12" class="text-input" v-model="item.text" placeholder="Item Text"/>
+    <input type='text' class="text-input tag-input" v-model="currentTag" placeholder="Tag" />
     <button @click.prevent="addTag(currentTag)">Add Tag</button>
     <ul class="tag-list">
       <li v-for="(tag, index) in item.tags" :key="tag">{{tag}} <span @click="removeTag(index)"><i class="fas fa-times fa-sm"></i></span></li>
@@ -32,7 +30,7 @@ export default {
     return {
       currentTag: '',
       item: {
-        type: '',
+        type: 'Type',
         text: '',
         tags: []
       }
@@ -84,20 +82,37 @@ export default {
     margin: 10px 0 10px 0;
     grid-column: 1/3;
   }
+  textarea:focus, input:focus select:focus{
+    outline: none;
+  }
   select {
-    background-color: #BF1C83;
-    color: white;
     font-size: 1.1rem;
     align-self: center;
     grid-column: 1/3;
+    background: transparent;
+    border-top: transparent !important;
+    border-left: transparent !important;
+    border-right: transparent !important;
+    border-bottom: 1px solid #BF1C83;
+    color: #BF1C83;
   }
   .text-input {
-    font-size: 1.2rem;
+    font-size: .8rem;
     padding: 5px;
-    border: 3px solid #7A21A8;
+    border-bottom: 1px solid #7A21A8;
     border-radius: 2px;
-    background-color: lightgrey;
     grid-column: 1/3;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    border-top: transparent ;
+    border-left: transparent ;
+    border-right: transparent ;
+    margin: 10px 0 10px 0;
+    color: #1C61BF;
+  }
+  textarea {
+    border: 1px solid #7A21A8 !important;
   }
   .tag-input {
     width: auto;
@@ -106,10 +121,15 @@ export default {
   button {
     font-size: .5rem;
     padding: 2px;
-    border: 3px solid #7A21A8;
     background-color: #7A21A8;
     color: white;
     border-left: 0px;
+    margin: 10px 0 10px 0;
+  }
+  button:hover {
+    background-color: white;
+    color: #7A21A8;
+    border: 2px solid #7A21A8;
   }
   .tag-list {
     list-style: none;
@@ -117,10 +137,10 @@ export default {
     flex-flow: row wrap;
   }
   li {
-    border: 2px solid #2B1AB5;
     color: #2B1AB5;
     margin: 5px;
     padding: 7px;
+
   }
   .submit-input {
     grid-column: 1/3;
@@ -128,5 +148,10 @@ export default {
     font-size: 1rem;
     background-color: #1AADB5;
     color: white;
+  }
+  .submit-input:hover {
+    background-color: white;
+    border: 2px solid #1AADB5;
+    color: #1AADB5;
   }
 </style>

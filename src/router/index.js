@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Auth from '@okta/okta-vue'
-import login from '@/pages/login'
 import snippets from '@/pages/snippets-list'
 import add from '@/pages/add-snippet'
 import registration from '@/pages/registration'

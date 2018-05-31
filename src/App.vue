@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header>
-      <h1>Cover Letter Helper</h1>
+      <h1><router-link class="logo-link" to="/"><i class="far fa-file-alt"></i> Cover Letter Helper</router-link></h1>
       <div id="login-logout">
       </div>
       <nav>
@@ -82,9 +82,18 @@ header {
   position: fixed;
   width: 100%;
 }
-h1 {
+.logo-link {
   margin: 0;
   color: #BF1C83;
+  font-size: 1.5rem;
+  align-self: end;
+  text-decoration: none;
+  padding: 10px;
+}
+.logo-link:hover {
+  margin: 0;
+  color: white;
+  background-color: #BF1C83;
   font-size: 1.5rem;
   align-self: end;
 }

@@ -27,7 +27,8 @@ export default {
       snippets: [],
       selectedOption: '',
       modalShow: false,
-      editId: null
+      editId: null,
+      authenticated: false
     }
   },
   created() {
@@ -49,7 +50,8 @@ export default {
               return {
                 topics: entry.tags,
                 text: entry.text,
-                id: entry.id
+                id: entry.id,
+                type: entry.type
               }
             })
           })

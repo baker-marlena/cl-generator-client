@@ -22,11 +22,11 @@
         </p>
         <input type='text' class="text-input tag-input" v-model="currentTag"></input>
         <button @click.prevent="addTag(currentTag)">Add Tag</button>
-        <input type='text' contenteditable class="text-input" v-model="item.text"></input>
+        <textarea rows="6" class="text-input" v-model="item.text" />
         <select v-model="item.type">
-          <option>Snippet</option>
-          <option>Story</option>
-          <option>Answer</option>
+          <option :selected="item.type == 'snippet'">Snippet</option>
+          <option :selected="item.type == 'story'">Story</option>
+          <option :selected="item.type == 'answer'">Answer</option>
         </select>
         <input class="submit-input" type="submit" value="Update Item" />
       </form>
@@ -112,7 +112,6 @@ li {
   margin: 0 auto;
 }
 .tag-item {
-  border: 2px solid #2B1AB5;
   color: #2B1AB5;
   margin: 5px;
   padding: 7px;
@@ -121,13 +120,19 @@ li {
   align-self: top;
 }
 .text-input {
-  /* font-size: 1.2rem; */
-  padding: 5px;
-  border: 1px solid #7A21A8;
-  border-radius: 2px;
-  /* background-color: lightgrey; */
   grid-column: 1/3;
-  margin-top: 10px;
+  font-size: .8rem;
+  padding: 5px;
+  border-bottom: 1px solid #7A21A8;
+  border-radius: 2px;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+  border-top: transparent !important;
+  border-left: transparent !important;
+  border-right: transparent !important;
+  margin: 10px 0 10px 0;
+  color: #1C61BF;
 }
 .tag-input {
   width: auto;
@@ -135,31 +140,45 @@ li {
 }
 button {
   font-size: .5rem;
-  /* padding: 2px; */
-  border: 3px solid #7A21A8;
+  padding: 2px;
   background-color: #7A21A8;
   color: white;
   border-left: 0px;
-  margin-top: 10px;
-}
-label {
   margin: 10px 0 10px 0;
-  grid-column: 1/3;
+}
+button:hover {
+  background: transparent;
+  color: #7A21A8;
+  border: 2px solid #7A21A8;
+}
+textarea:focus, input:focus select:focus{
+  outline: none;
 }
 select {
-  background-color: #BF1C83;
-  color: white;
   font-size: 1.1rem;
   align-self: center;
   grid-column: 1/2;
-  margin-top: 10px;
+  background: transparent;
+  border-top: transparent !important;
+  border-left: transparent !important;
+  border-right: transparent !important;
+  border-bottom: 1px solid #BF1C83;
+  color: #BF1C83;
+  margin-right: 5px;
 }
 .submit-input {
   grid-column: 2/3;
-  /* padding: 5px 0 5px 0; */
-  font-size: .5rem;
+  padding: 5px 0 5px 0;
+  font-size: 1rem;
   background-color: #1AADB5;
   color: white;
-  margin-top: 10px;
-}
+  }
+  .submit-input:hover {
+    background-color: white;
+    border: 2px solid #1AADB5;
+    color: #1AADB5;
+  }
+  textarea {
+    border: 1px solid #7A21A8 !important;
+  }
 </style>
