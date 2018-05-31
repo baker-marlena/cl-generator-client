@@ -22,6 +22,12 @@
 <script>
 export default {
   name: 'addSnippet',
+  props: {
+    itemData: {
+      type: Object,
+      required: false
+    }
+  },
   data() {
     return {
       currentTag: '',
@@ -67,7 +73,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
   form {
     display: grid;
     grid-template-columns: 80% 20%;

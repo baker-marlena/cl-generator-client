@@ -5,11 +5,12 @@
       <div id="login-logout">
       </div>
       <nav>
-        <a v-if='authenticated' class='nav-link auth-link' v-on:click='logout' id='logout-button'><i class="far fa-sign-out-alt"></i> Logout</a>
-        <a v-else v-on:click='login' class='nav-link auth-link' id='login-button'><i class="far fa-sign-in-alt"></i> Login</a>
         <router-link to='/list' class='nav-link' v-if='authenticated'><i class="fal fa-list-alt"></i> List</router-link>
         <router-link to='/add' class='nav-link' v-if='authenticated'><i class="far fa-plus-hexagon"></i> Add</router-link>
         <router-link to='' class='nav-link' v-if='authenticated'><i class="far fa-question-circle"></i> About</router-link>
+        <router-link to='/register' class='nav-link register-link' v-if='!authenticated'><i class="far fa-star"></i> Register</router-link>
+        <a v-if='authenticated' class='nav-link auth-link' v-on:click='logout' id='logout-button'><i class="far fa-sign-out-alt"></i> Logout</a>
+        <a v-else v-on:click='login' class='nav-link auth-link' id='login-button'><i class="far fa-sign-in-alt"></i> Login</a>
       </nav>
     </header>
     <div class="router-wrapper">
@@ -104,11 +105,13 @@ nav {
   color: white;
   background-color: #7A21A8;
   margin:0;
-  /* border: 2px solid #2B1AB5; */
+  cursor: pointer;
 }
 .auth-link {
   background-color: #1C61BF;
-  cursor: pointer;
+}
+.register-link {
+  background-color: #BF1C83;
 }
 .nav-link:hover {
   background-color: white;
@@ -116,6 +119,9 @@ nav {
 }
 .auth-link:hover {
   color: #1C61BF;
+}
+.register-link:hover {
+  color: #BF1C83;
 }
 .router-wrapper {
   grid-column: 2/4;

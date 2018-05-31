@@ -4,6 +4,7 @@ import Auth from '@okta/okta-vue'
 import login from '@/pages/login'
 import snippets from '@/pages/snippets-list'
 import add from '@/pages/add-snippet'
+import registration from '@/pages/registration'
 
 Vue.use(VueRouter)
 Vue.use(Auth, {
@@ -24,6 +25,11 @@ export default new VueRouter({
         path: '/',
         name: 'home',
         component: login
+      },
+      {
+        path: '/register',
+        name: 'registration',
+        component: registration
       },
       {
         path: '/list',

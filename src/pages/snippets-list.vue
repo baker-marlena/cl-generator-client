@@ -4,26 +4,30 @@
       <option class="option-box" v-for="topic in sortedOptions" :key="topic">{{topic}} <i class="far fa-angle-down"></i></option>
     </select>
     <ul>
-      <li v-for="(snippet, index) in displaySnippets" :key="snippet.text" :class="{highlighted: index %2 == 0}">
-        <p><span v-for="(tag, index) in snippet.topics" :key="tag" class="tag" :class="{pipe: index != 0}">{{tag}}</span></p>
-        <p @click="deleteSnippet(snippet.id)">
-          <i class="far fa-times-hexagon delete-button"></i>
-        </p>
-        <p>
-          {{snippet.text}}
-        </p>
-      </li>
+      <listItem
+      v-for="(snippet, index) in displaySnippets"
+      :key="snippet.text"
+      :class="{highlighted: index %2 == 0}"
+      :itemData="snippet"
+      ></listItem>
     </ul>
   </div>
 </template>
 
 <script>
+import listItem from '../components/list-item'
+
 export default {
+  components: {
+    listItem
+  },
   data() {
     return {
       options: [],
       snippets: [],
-      selectedOption: ''
+      selectedOption: '',
+      modalShow: false,
+      editId: null
     }
   },
   created() {
@@ -49,19 +53,6 @@ export default {
               }
             })
           })
-      })
-    },
-    deleteSnippet(id) {
-      this.$auth.getAccessToken().then(token => {
-        fetch(`http://localhost:3000/items/delete/${id}`, {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        .then(res => {
-          this.getSnippets();
-        })
       })
     }
   },
@@ -89,28 +80,10 @@ export default {
  ul {
    list-style: none;
  }
- li {
-   display: grid;
-   grid-template-columns: 95% 5%;
-   padding: 10px;
- }
  h3 {
    margin: 0;
  }
- .delete-button {
-   align-self: center;
-   color: #BF1C83;
-   cursor: pointer;
- }
  .highlighted {
-   background-color: lightgrey;
- }
- .tag {
-   padding: 5px;
-   font-weight: bold;
-   color: #2B1AB5;
- }
- .pipe {
-   border-left: 2px solid #7A21A8;
+   background-color: #EDEDED;
  }
 </style>
