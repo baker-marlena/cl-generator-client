@@ -9,6 +9,7 @@
       :key="snippet.text"
       :class="{highlighted: index %2 == 0}"
       :itemData="snippet"
+      :getSnippets="getSnippets"
       ></listItem>
     </ul>
   </div>
@@ -37,7 +38,7 @@ export default {
   methods: {
     getSnippets() {
       this.$auth.getAccessToken().then(token => {
-        fetch('http://localhost:3000/items/list', {
+        fetch('https://coverletter-gen.herokuapp.com/items/list', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`
@@ -74,11 +75,15 @@ export default {
 </script>
 
 <style lang="css" scoped>
-  select {
-   background-color: #BF1C83;
-   color: white;
+ select {
    font-size: 1.1rem;
-   margin: 0;
+   align-self: center;
+   background: transparent;
+   border-top: transparent !important;
+   border-left: transparent !important;
+   border-right: transparent !important;
+   border-bottom: 1px solid #BF1C83;
+   color: #BF1C83;
  }
  ul {
    list-style: none;

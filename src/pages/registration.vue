@@ -48,7 +48,7 @@ export default {
       console.log('final result', this.verifyCredentials());
       if(this.verifyCredentials()){
         this.user.profile.login = this.user.profile.email
-        fetch('http://localhost:3000/user/register', {
+        fetch('https://coverletter-gen.herokuapp.com/user/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

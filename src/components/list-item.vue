@@ -8,7 +8,7 @@
       <p class="full-width">
         {{item.text}}
       </p>
-      <p @click="deleteSnippet(itemData.id)">
+      <p @click="showModal = true">
         <i class="far fa-times-hexagon delete-button"></i>
       </p>
     </div>
@@ -21,15 +21,20 @@
           <i class="far fa-times"></i>
         </p>
         <input type='text' class="text-input tag-input" v-model="currentTag"></input>
-        <button @click.prevent="addTag(currentTag)">Add Tag</button>
+        <button @click.prevent="addTag(currentTag)" class="tagButton">Add Tag</button>
         <textarea rows="6" class="text-input" v-model="item.text" />
         <select v-model="item.type">
           <option :selected="item.type == 'snippet'">Snippet</option>
-          <option :selected="item.type == 'story'">Story</option>
-          <option :selected="item.type == 'answer'">Answer</option>
+          <!-- <option :selected="item.type == 'story'">Story</option>
+          <option :selected="item.type == 'answer'">Answer</option> -->
         </select>
         <input class="submit-input" type="submit" value="Update Item" />
       </form>
+    </div>
+    <div class="modalDiv" v-if="showModal">
+      <h2 class="modalHeader">Confirm you want to delete this snippet?</h2>
+      <button class="modalDecline modalButton" @click="showModal = false">No</button>
+      <button class="modalConfirm modalButton" @click="deleteSnippet(itemData.id)">Yes</button>
     </div>
   </li>
 </template>
@@ -37,10 +42,12 @@
 <script>
 export default {
   name:'listItem',
-  props: ['itemData'],
+  props: ['itemData', 'getSnippets'],
   data() {
     return {
       editMode: false,
+      showModal: false,
+      deleteConfirm: false,
       currentTag: '',
       item: {
         text: '',
@@ -51,7 +58,7 @@ export default {
   },
   created() {
     this.$auth.getAccessToken().then(token => {
-      fetch(`http://localhost:3000/items/${this.itemData.id}`, {
+      fetch(`https://coverletter-gen.herokuapp.com/items/${this.itemData.id}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`
@@ -68,7 +75,7 @@ export default {
   methods: {
     deleteSnippet(id) {
       this.$auth.getAccessToken().then(token => {
-        fetch(`http://localhost:3000/items/delete/${id}`, {
+        fetch(`https://coverletter-gen.herokuapp.com/items/delete/${id}`, {
           method: 'DELETE',
           headers: {
             Authorization: `Bearer ${token}`
@@ -83,7 +90,7 @@ export default {
       console.log(id, this.item);
       let body = this.item
       this.$auth.getAccessToken().then(token => {
-        fetch(`http://localhost:3000/items/${id}`, {
+        fetch(`https://coverletter-gen.herokuapp.com/items/${id}`, {
           method: 'PUT',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -172,7 +179,7 @@ li {
   width: auto;
   grid-column: 1/2;
 }
-button {
+.tagButton {
   font-size: .5rem;
   padding: 2px;
   background-color: #7A21A8;
@@ -180,7 +187,7 @@ button {
   border-left: 0px;
   margin: 10px 0 10px 0;
 }
-button:hover {
+.tagButton:hover {
   background: transparent;
   color: #7A21A8;
   border: 2px solid #7A21A8;
@@ -214,5 +221,40 @@ select {
 }
 textarea {
   border: 1px solid #7A21A8 !important;
+}
+.modalDiv {
+  display: grid;
+  grid-column-template: 50% 50%;
+  width: 70%;
+  margin: 0 auto;
+}
+.modalHeader {
+  font-size: 1.5rem;
+  color: #BF1C83;
+  margin: 0 0 15px 0;
+  grid-column: 1/3;
+}
+.modalButton {
+  color: white;
+  font-size: 1rem;
+  padding: 5px;
+  width: 100px;
+  margin: 0 auto;
+}
+.modalConfirm {
+  background-color: #0B7200;
+}
+.modalConfirm:hover {
+  background-color: transparent;
+  color: #0B7200;
+  border: 1px solid #0B7200;
+}
+.modalDecline {
+  background-color: #E8220A;
+}
+.modalDecline:hover {
+  color: #E8220A;
+  border: 1px solid #E8220A;
+  background-color: transparent;
 }
 </style>

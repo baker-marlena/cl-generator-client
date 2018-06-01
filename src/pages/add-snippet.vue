@@ -4,8 +4,8 @@
     <select v-model="item.type" class="full-width">
       <option disabled hidden>Type</option>
       <option>Snippet</option>
-      <option>Story</option>
-      <option>Answer</option>
+      <!-- <option>Story</option>
+      <option>Answer</option> -->
     </select>
     <p class="error-text full-width">{{typeErrorMessage}}</p>
     <textarea rows="12" class="text-input" v-model="item.text" placeholder="Item Text"/>
@@ -55,7 +55,7 @@ export default {
     sendItem() {
       if(this.verifyForm()){
         this.$auth.getAccessToken().then(token => {
-          fetch('http://localhost:3000/items/add', {
+          fetch('https://coverletter-gen.herokuapp.com/items/add', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
