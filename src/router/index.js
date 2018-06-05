@@ -10,7 +10,7 @@ Vue.use(VueRouter)
 Vue.use(Auth, {
   issuer: 'https://dev-593134.oktapreview.com/oauth2/default',
   client_id: '0oaf5r6b3iHA6zH8Q0h7',
-  redirect_uri: 'http://localhost:8080/implicit/callback',
+  redirect_uri: 'https://coverletter-gen.firebaseapp.com/implicit/callback',
   scope: 'openid profile email'
 })
 

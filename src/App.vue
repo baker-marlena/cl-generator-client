@@ -5,6 +5,12 @@
       <div id="login-logout">
       </div>
       <nav>
+        <div v-if='authenticated' class="user-menu-wrapper">
+          <a class="nav-link user-name" @click="showUserSettings = !showUserSettings"><i class="fas fa-user-circle"></i> {{userName}}</a>
+          <div class="user-settings" v-if="showUserSettings">
+            User Settings to come!
+          </div>
+        </div>
         <router-link to='/list' class='nav-link' v-if='authenticated'><i class="fal fa-list-alt"></i> List</router-link>
         <router-link to='/add' class='nav-link' v-if='authenticated'><i class="far fa-plus-hexagon"></i> Add</router-link>
         <router-link to='/register' class='nav-link register-link' v-if='!authenticated'><i class="far fa-star"></i> Register</router-link>
@@ -27,7 +33,9 @@ export default {
   name: 'App',
   data: function () {
     return {
-      authenticated: false
+      authenticated: false,
+      userName: '',
+      showUserSettings: false
     }
   },
   created () {
@@ -35,7 +43,23 @@ export default {
   },
   watch: {
     // Everytime the route changes, check for auth status
-    '$route': 'isAuthenticated'
+    '$route': 'isAuthenticated',
+    authenticated(value) {
+      if(value) {
+        this.$auth.getAccessToken().then(token => {
+          fetch('https://coverletter-gen.herokuapp.com/user', {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          })
+          .then(res => res.json())
+          .then(res => {
+            this.userName = res.data.firstName
+          })
+        })
+      }
+    }
   },
   methods: {
     async isAuthenticated () {
@@ -76,7 +100,7 @@ body {
 header {
   grid-column: 1/5;
   background-color: white;
-  color: white;
+  color: transparent;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   padding: 20px;
@@ -133,6 +157,27 @@ nav {
 }
 .register-link:hover {
   color: #BF1C83;
+}
+.user-menu-wrapper {
+  display:flex;
+  flex-flow: column;
+  position: relative;
+}
+.user-name {
+  color: #BF1C83;
+  background-color: white;
+}
+.user-name:hover {
+  color: white;
+  background-color: #BF1C83;
+}
+.user-settings {
+  background-color: white;
+  position: absolute;
+  z-index: 9999;
+  bottom: -47px;
+  color: #7A21A8;
+  border: 2px solid #BF1C83;
 }
 .router-wrapper {
   grid-column: 2/4;

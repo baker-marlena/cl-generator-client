@@ -112,7 +112,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
   form {
     display: flex;
     flex-flow: column nowrap;
