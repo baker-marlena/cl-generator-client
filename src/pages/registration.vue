@@ -1,15 +1,11 @@
 <template lang="html">
   <form @submit.prevent="sendRegistration">
-    <input class="text-input" type="text" placeholder="First Name" v-model="user.profile.firstName"/>
-    <p class="error-text">{{firstNameErrorMessage}}</p>
-    <input class="text-input" type="text" placeholder="Last Name" v-model="user.profile.lastName" />
-    <p class="error-text">{{lastNameErrorMessage}}</p>
-    <input class="text-input" type="text" placeholder="Email Address" v-model="user.profile.email"/>
+    <input class="text-input" type="text" placeholder="Email Address" v-model="userEmail"/>
     <p class="error-text">{{emailErrorMessage}}</p>
-    <input class="text-input" type="text" placeholder="Password" v-model="user.credentials.password.value"/>
+    <input class="text-input" type="password" placeholder="Password" v-model="userPassword"/>
     <small>Password should be 8 letters long and contain at least one of each: uppercase letters, lowercase letters, and numbers</small>
     <p class="error-text">{{passwordCriteriaErrorMessage}}</p>
-    <input class="text-input" type="text" placeholder="Confirm Password" v-model="passwordConfirm" />
+    <input class="text-input" type="password" placeholder="Confirm Password" v-model="passwordConfirm" />
     <p class="error-text">{{passwordMatchErrorMessage}}</p>
     <input class="submit-input" type=submit value="Submit Registraion"/>
   </form>
@@ -26,66 +22,32 @@ export default {
       passwordMatchErrorMessage: '',
       passwordCriteriaErrorMessage: '',
       emailErrorMessage: '',
-      firstNameErrorMessage: '',
-      lastNameErrorMessage: '',
-      user: {
-        profile: {
-          firstName: '',
-          lastName: '',
-          email: '',
-          login: ''
-        },
-        credentials: {
-          password : {
-            value: ''
-          }
-        }
-      }
+      userEmail: '',
+      userPassword: ''
     }
   },
   methods: {
     sendRegistration() {
       console.log('final result', this.verifyCredentials());
       if(this.verifyCredentials()){
-        this.user.profile.login = this.user.profile.email
-        fetch('https://coverletter-gen.herokuapp.com/user/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(this.user)
-        })
-        .then(res => res.json)
-        .then(res => {
-          console.log(res);
-        })
+        firebase.auth().createUserWithEmailAndPassword(this.userEmail, this.userPassword)
+        .catch(function(error) {
+          // Handle Errors here.
+          console.error(error.code);
+          console.error(error.message);
+          // ...
+        });
       }
     },
     verifyCredentials() {
       let passwordMatch = this.verifyPasswordMatch()
       let password = this.verifyPasswordCritera()
       let email = this.verifyEmail()
-      let firstName = this.verifyFirstName()
-      let lastName = this.verifyLastName()
-      console.log(passwordMatch, password, email, firstName, lastName);
-      return passwordMatch && password && email && firstName && lastName
-    },
-    verifyFirstName() {
-      if(this.user.profile.firstName === ''){
-        this.firstNameErrorMessage = 'Please enter a first name.'
-      } else {
-        return true
-      }
-    },
-    verifyLastName() {
-      if(this.user.profile.lastName === ''){
-        this.lastNameErrorMessage = 'Please enter a last name.'
-      } else {
-        return true
-      }
+      console.log(passwordMatch, password, email);
+      return passwordMatch && password && email;
     },
     verifyPasswordMatch() {
-      if(this.user.credentials.password.value !== this.passwordConfirm) {
+      if(this.userPassword !== this.passwordConfirm) {
         this.passwordMatchErrorMessage = 'Passwords do not match.'
       } else {
         return true
@@ -93,7 +55,7 @@ export default {
     },
     verifyPasswordCritera() {
       let regexTest = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
-      if(!regexTest.test(this.user.credentials.password.value)) {
+      if(!regexTest.test(userPassword)) {
         this.passwordCriteriaErrorMessage = 'Please enter a valid password.'
       } else {
         console.log('criteria', !regexTest.test(this.user.credentials.password.value) && this.user.credentials.password.value !== '');
@@ -102,7 +64,7 @@ export default {
     },
     verifyEmail() {
       let regexTest = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      if(!regexTest.test(this.user.profile.email)) {
+      if(!regexTest.test(this.userEmail)) {
         this.emailErrorMessage = 'Please enter a valid email address.'
       } else {
         return true

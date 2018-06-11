@@ -12,6 +12,7 @@
   "dependencies": {
     "@okta/okta-auth-js": "^1.17.0",
     "@okta/okta-vue": "^1.0.1",
+    "firebase": "^5.0.4",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },

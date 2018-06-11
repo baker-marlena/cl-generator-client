@@ -24,7 +24,8 @@ export default new VueRouter({
       {
         path: '/',
         name: 'home',
-        component: landing
+        component: landing,
+        props: true
       },
       {
         path: '/register',

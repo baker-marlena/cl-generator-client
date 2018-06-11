@@ -13,13 +13,13 @@
         </div>
         <router-link to='/list' class='nav-link' v-if='authenticated'><i class="fal fa-list-alt"></i> List</router-link>
         <router-link to='/add' class='nav-link' v-if='authenticated'><i class="far fa-plus-hexagon"></i> Add</router-link>
-        <router-link to='/register' class='nav-link register-link' v-if='!authenticated'><i class="far fa-star"></i> Register</router-link>
+        <!-- <router-link to='/register' class='nav-link register-link' v-if='!authenticated'><i class="far fa-star"></i> Register</router-link> -->
         <a v-if='authenticated' class='nav-link auth-link' v-on:click='logout' id='logout-button'><i class="far fa-sign-out-alt"></i> Logout</a>
-        <a v-else v-on:click='login' class='nav-link auth-link' id='login-button'><i class="far fa-sign-in-alt"></i> Login</a>
+        <a v-else v-on:click='showLoginModal = !showLoginModal' class='nav-link auth-link' id='login-button'><i class="far fa-sign-in-alt"></i> Login</a>
       </nav>
     </header>
     <div class="router-wrapper">
-      <router-view/>
+      <router-view :showLoginModal="showLoginModal" :onSignIn="onSignIn"/>
     </div>
     <footer>
       <small>Copyright 2018 Marlena Baker <a class="site-link" href="https://marlenabaker.tech"><i class="far fa-globe"></i></a></small>
@@ -35,45 +35,32 @@ export default {
     return {
       authenticated: false,
       userName: '',
-      showUserSettings: false
+      showUserSettings: false,
+      showLoginModal: false
     }
   },
-  created () {
-    this.isAuthenticated()
-  },
-  watch: {
-    // Everytime the route changes, check for auth status
-    '$route': 'isAuthenticated',
-    authenticated(value) {
-      if(value) {
-        this.$auth.getAccessToken().then(token => {
-          fetch('https://coverletter-gen.herokuapp.com/user', {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          })
-          .then(res => res.json())
-          .then(res => {
-            this.userName = res.data.firstName
-          })
-        })
-      }
-    }
+  created() {
+    window.gapi.auth2.init({
+      client_id: '9225906390-f61a75etmqmhv4e0dmavu7um7uajojam.apps.googleusercontent.com'
+    })
   },
   methods: {
-    async isAuthenticated () {
-      this.authenticated = await this.$auth.isAuthenticated()
-    },
-    login () {
-      this.$auth.loginRedirect('/list')
-    },
-    async logout () {
-      await this.$auth.logout()
-      await this.isAuthenticated()
-
-      // Navigate back to home
-      this.$router.push({ path: '/' })
+    onSignIn(googleUser) {
+      window.gapi.auth2.getAuthInstance().signIn()
+      .then(function (googleUser) {
+        var profile = googleUser.getBasicProfile();
+        var id_token = googleUser.getAuthResponse().id_token;
+        fetch('http://localhost:3000/user/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({idtoken:id_token, email:profile.getEmail()})
+        })
+      })
+      .catch(err => {
+        console.error(err);
+      })
     }
   }
 }

@@ -3,8 +3,20 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 Vue.config.productionTip = false
+
+// Initialize Firebase
+var config = {
+  apiKey: "AIzaSyBONY5e4Y8-SUHybfvx8Ybq8Lgaw3LdPdc",
+  authDomain: "coverletter-gen.firebaseapp.com",
+  databaseURL: "https://coverletter-gen.firebaseio.com",
+  projectId: "coverletter-gen",
+  storageBucket: "coverletter-gen.appspot.com",
+  messagingSenderId: "9225906390"
+};
 
 /* eslint-disable no-new */
 new Vue({
