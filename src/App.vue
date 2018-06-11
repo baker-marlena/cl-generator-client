@@ -19,7 +19,13 @@
       </nav>
     </header>
     <div class="router-wrapper">
-      <router-view :showLoginModal="showLoginModal" :onSignIn="onSignIn"/>
+      <router-view
+      :showLoginModal="showLoginModal"
+      :onSignIn="onSignIn"
+      :getUserToken="getUserToken"
+      :userEmail="userEmail"
+      :setLogout="setLogout"
+      />
     </div>
     <footer>
       <small>Copyright 2018 Marlena Baker <a class="site-link" href="https://marlenabaker.tech"><i class="far fa-globe"></i></a></small>
@@ -35,21 +41,28 @@ export default {
     return {
       authenticated: false,
       userName: '',
+      userEmail: '',
       showUserSettings: false,
-      showLoginModal: false
+      showLoginModal: false,
+      GoogleAuth: null
     }
   },
   created() {
-    window.gapi.auth2.init({
+    gapi.auth2.init({
       client_id: '9225906390-f61a75etmqmhv4e0dmavu7um7uajojam.apps.googleusercontent.com'
     })
+    this.GoogleAuth = gapi.auth2.getAuthInstance();
   },
   methods: {
+    getUserToken(googleUser) {
+      return googleUser.getAuthResponse().id_token;
+    },
     onSignIn(googleUser) {
-      window.gapi.auth2.getAuthInstance().signIn()
+      this.GoogleAuth.signIn()
       .then((googleUser) => {
         var profile = googleUser.getBasicProfile();
-        var id_token = googleUser.getAuthResponse().id_token;
+        var id_token = this.getUserToken(googleUser);
+        this.userEmail = profile.getEmail();
         fetch('http://localhost:3000/user/login', {
           method: 'POST',
           headers: {
@@ -58,15 +71,17 @@ export default {
           body: JSON.stringify({
             idtoken:id_token,
             user: {
-              email:profile.getEmail(),
+              email: this.userEmail,
               firstName: profile.ofa
             }
           })
         })
         .then(res => res.json())
         .then(response => {
-          this.userName = response.data.user
-          this.$router.push('/list')
+          this.userName = response.data.user;
+          this.authenticated = true;
+          this.showLoginModal = false;
+          this.$router.push('/list');
         })
         .catch(err => {
           console.error(err);
@@ -74,6 +89,16 @@ export default {
       })
       .catch(err => {
         console.error(err);
+      })
+    },
+    setLogout() {
+      this.authenticated = false;
+    },
+    logout() {
+      this.GoogleAuth.signOut()
+      .then(() => {
+        this.setLogout();
+        this.$router.push('/');
       })
     }
   }

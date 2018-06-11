@@ -27,10 +27,20 @@ export default {
     itemData: {
       type: Object,
       required: false
+    },
+    userEmail: {
+      type: String,
+      required: false
+    },
+    setLogout: {
+      type: Function,
+      required: true
     }
   },
   data() {
     return {
+      GoogleAuth: null,
+      authenticated: false,
       typeErrorMessage: '',
       textErrorMessage: '',
       tagsErrorMessage: '',
@@ -40,6 +50,16 @@ export default {
         text: '',
         tags: []
       }
+    }
+  },
+  created() {
+    this.GoogleAuth = gapi.auth2.getAuthInstance();
+    let authStatus = this.GoogleAuth.isSignedIn.get()
+    if (authStatus) {
+      this.authenticated = true;
+    } else {
+      this.setLogout();
+      this.$router.push('/');
     }
   },
   methods: {
@@ -54,23 +74,22 @@ export default {
     },
     sendItem() {
       if(this.verifyForm()){
-        this.$auth.getAccessToken().then(token => {
-          fetch('https://coverletter-gen.herokuapp.com/items/add', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(this.item)
-          })
-          .then(res => {
-            this.item = {
-              type: '',
-              text: '',
-              tags: []
-            }
-            this.currentTag = ''
-          })
+        let token = this.GoogleAuth.currentUser.get().getAuthResponse().id_token
+        fetch('https://coverletter-gen.herokuapp.com/items/add?email=${this.userEmail}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(this.item)
+        })
+        .then(res => {
+          this.item = {
+            type: '',
+            text: '',
+            tags: []
+          }
+          this.currentTag = ''
         })
       }
     },

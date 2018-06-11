@@ -10,6 +10,7 @@
       :class="{highlighted: index %2 == 0}"
       :itemData="snippet"
       :getSnippets="getSnippets"
+      :userEmail="userEmail"
       ></listItem>
     </ul>
   </div>
@@ -22,6 +23,7 @@ export default {
   components: {
     listItem
   },
+  props: ['getUserToken', 'userEmail', 'setLogout'],
   data() {
     return {
       options: [],
@@ -29,34 +31,43 @@ export default {
       selectedOption: '',
       modalShow: false,
       editId: null,
-      authenticated: false
+      authenticated: false,
+      GoogleAuth: null
     }
   },
   created() {
-    this.getSnippets()
+    this.GoogleAuth = gapi.auth2.getAuthInstance();
+    let authStatus = this.GoogleAuth.isSignedIn.get()
+    if (authStatus) {
+      this.getSnippets();
+      this.authenticated = true;
+    } else {
+      this.setLogout();
+      this.$router.push('/');
+    }
   },
   methods: {
     getSnippets() {
-      this.$auth.getAccessToken().then(token => {
-        fetch('https://coverletter-gen.herokuapp.com/items/list', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-          .then(res => res.json())
-          .then(res => {
-            this.options = res.data.tags
-            this.snippets = res.data.list.map(entry => {
-              return {
-                topics: entry.tags,
-                text: entry.text,
-                id: entry.id,
-                type: entry.type
-              }
-            })
-          })
+      let userInstance = this.GoogleAuth.currentUser.get()
+      let token = userInstance.getAuthResponse().id_token
+      fetch(`http://localhost:3000/items/list?email=${this.userEmail}`, {
+        method: 'GET',
+        headers: {
+          token: token
+        }
       })
+        .then(res => res.json())
+        .then(res => {
+          this.options = res.data.tags
+          this.snippets = res.data.list.map(entry => {
+            return {
+              topics: entry.tags,
+              text: entry.text,
+              id: entry.id,
+              type: entry.type
+            }
+          })
+        })
     }
   },
   computed: {

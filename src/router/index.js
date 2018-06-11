@@ -35,12 +35,14 @@ export default new VueRouter({
       {
         path: '/list',
         name: 'snippets-list',
-        component: snippets
+        component: snippets,
+        props: true
       },
       {
         path: '/add',
         name: 'add-snippet',
-        component: add
+        component: add,
+        props: true
       }
     ]
 })

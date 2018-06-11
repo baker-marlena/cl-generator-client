@@ -42,9 +42,10 @@
 <script>
 export default {
   name:'listItem',
-  props: ['itemData', 'getSnippets'],
+  props: ['itemData', 'getSnippets', 'userEmail'],
   data() {
     return {
+      GoogleAuth: null,
       editMode: false,
       showModal: false,
       deleteConfirm: false,
@@ -57,11 +58,16 @@ export default {
     }
   },
   created() {
-    this.$auth.getAccessToken().then(token => {
-      fetch(`https://coverletter-gen.herokuapp.com/items/${this.itemData.id}`, {
+    this.GoogleAuth = gapi.auth2.getAuthInstance();
+    this.getItemData();
+  },
+  methods: {
+    getItemData() {
+      let token = this.GoogleAuth.currentUser.get().getAuthResponse().id_token
+      fetch(`http://localhost:3000/items/${this.itemData.id}?email=${this.userEmail}`, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`
+          token: token
         }
       })
       .then(res => res.json())
@@ -70,34 +76,29 @@ export default {
         this.item.text = res.data.text
         this.item.type = res.data.type
       })
-    })
-  },
-  methods: {
+    },
     deleteSnippet(id) {
-      this.$auth.getAccessToken().then(token => {
-        fetch(`https://coverletter-gen.herokuapp.com/items/delete/${id}`, {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        .then(res => {
-          this.getSnippets();
-        })
+      let token = this.GoogleAuth.currentUser.get().getAuthResponse().id_token
+      fetch(`https://coverletter-gen.herokuapp.com/items/delete/${id}?email=${this.userEmail}`, {
+        method: 'DELETE',
+        headers: {
+          token: token
+        }
+      })
+      .then(res => {
+        this.getSnippets();
       })
     },
     updateSnippet(id) {
-      console.log(id, this.item);
       let body = this.item
-      this.$auth.getAccessToken().then(token => {
-        fetch(`https://coverletter-gen.herokuapp.com/items/${id}`, {
-          method: 'PUT',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
-        })
+      let token = this.GoogleAuth.currentUser.get().getAuthResponse().id_token
+      fetch(`https://coverletter-gen.herokuapp.com/items/${id}?email=${this.userEmail}`, {
+        method: 'PUT',
+        headers: {
+          token: token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
       })
     },
     addTag(tag) {
@@ -108,9 +109,6 @@ export default {
     },
     removeTag(index) {
       this.item.tags.splice(index, 1)
-    },
-    updateItem(){
-      console.log(this.item);
     }
   }
 }
