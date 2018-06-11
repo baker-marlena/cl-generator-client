@@ -47,7 +47,7 @@ export default {
   methods: {
     onSignIn(googleUser) {
       window.gapi.auth2.getAuthInstance().signIn()
-      .then(function (googleUser) {
+      .then((googleUser) => {
         var profile = googleUser.getBasicProfile();
         var id_token = googleUser.getAuthResponse().id_token;
         fetch('http://localhost:3000/user/login', {
@@ -55,7 +55,21 @@ export default {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({idtoken:id_token, email:profile.getEmail()})
+          body: JSON.stringify({
+            idtoken:id_token,
+            user: {
+              email:profile.getEmail(),
+              firstName: profile.ofa
+            }
+          })
+        })
+        .then(res => res.json())
+        .then(response => {
+          this.userName = response.data.user
+          this.$router.push('/list')
+        })
+        .catch(err => {
+          console.error(err);
         })
       })
       .catch(err => {
