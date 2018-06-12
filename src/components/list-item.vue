@@ -64,7 +64,7 @@ export default {
   methods: {
     getItemData() {
       let token = this.GoogleAuth.currentUser.get().getAuthResponse().id_token
-      fetch(`http://localhost:3000/items/${this.itemData.id}?email=${this.userEmail}`, {
+      fetch(`https://coverletter-gen.herokuapp.com/items/${this.itemData.id}?email=${this.userEmail}`, {
         method: 'GET',
         headers: {
           token: token

@@ -50,7 +50,7 @@ export default {
     getSnippets() {
       let userInstance = this.GoogleAuth.currentUser.get()
       let token = userInstance.getAuthResponse().id_token
-      fetch(`http://localhost:3000/items/list?email=${this.userEmail}`, {
+      fetch(`https://coverletter-gen.herokuapp.com/items/list?email=${this.userEmail}`, {
         method: 'GET',
         headers: {
           token: token

@@ -63,7 +63,7 @@ export default {
         var profile = googleUser.getBasicProfile();
         var id_token = this.getUserToken(googleUser);
         this.userEmail = profile.getEmail();
-        fetch('http://localhost:3000/user/login', {
+        fetch('https://coverletter-gen.herokuapp.com/user/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
