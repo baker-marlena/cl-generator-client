@@ -17,7 +17,7 @@
         <ul class="tag-list">
           <li v-for="(tag, index) in item.tags" :key="tag" class="tag-item">{{tag}} <span @click="removeTag(index)"><i class="fas fa-times fa-sm"></i></span></li>
         </ul>
-        <p class="close-button" @click="editMode = !editMode">
+        <p class="close-button" @click="closeEdit">
           <i class="far fa-times"></i>
         </p>
         <input type='text' class="text-input tag-input" v-model="currentTag"></input>
@@ -29,6 +29,7 @@
           <option :selected="item.type == 'answer'">Answer</option> -->
         </select>
         <input class="submit-input" type="submit" value="Update Item" />
+        <p v-if="showUpdateConfirm" class="update-status">Item updated.</p>
       </form>
     </div>
     <div class="modalDiv" v-if="showModal">
@@ -46,6 +47,7 @@ export default {
   data() {
     return {
       GoogleAuth: null,
+      showUpdateConfirm: false,
       editMode: false,
       showModal: false,
       deleteConfirm: false,
@@ -96,10 +98,21 @@ export default {
         method: 'PUT',
         headers: {
           token: token,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          token: token
         },
         body: JSON.stringify(body)
       })
+      .then(() => {
+        this.showUpdateConfirm = true;
+        window.setTimeout(() => {
+          this.closeEdit();
+        }, 5000);
+      });
+    },
+    closeEdit() {
+      this.editMode = false;
+      this.showUpdateConfirm = false;
     },
     addTag(tag) {
       if(!this.item.tags.find(el => {
@@ -254,5 +267,8 @@ textarea {
   color: #E8220A;
   border: 1px solid #E8220A;
   background-color: transparent;
+}
+.update-status{
+  grid-column: 1/3;
 }
 </style>

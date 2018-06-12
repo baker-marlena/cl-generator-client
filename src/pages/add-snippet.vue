@@ -75,7 +75,7 @@ export default {
     sendItem() {
       if(this.verifyForm()){
         let token = this.GoogleAuth.currentUser.get().getAuthResponse().id_token
-        fetch('https://coverletter-gen.herokuapp.com/items/add?email=${this.userEmail}', {
+        fetch(`https://coverletter-gen.herokuapp.com/items/add?email=${this.userEmail}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
